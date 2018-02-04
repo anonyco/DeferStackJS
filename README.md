@@ -64,7 +64,7 @@ Try running the code below in the console.
 ### The StackLevel
 
 For maximum performance, DeferStackJS does not completely disreguard the browser's native stack. Rather, it merely buffers it. The second parameter, *stackStartLevel*, allows you to control this to allow the maximum buffering for the best performance. *stackStartLevel* is the value the internal counter starts at. Once the counter reaches 256 (DeferStack called inside of DeferStack 256 times), the function to be called gets put in the synchonous buffer and executed at a lower stack level. For example, compare the performance of reduceing the stack buffer
-
+```Javascript
 (function(){
     "use strict";
     (function(){var d=[],a=0,b=!1,c=0;window.DeferStack=function(f,e){e=+e||1;if(b)d.push(f),++c;else if(256<=a)b=!0,d.push(f),++c;else if(a?++a:a=e,f(),a===e)try{if(c){do b=!1,d.shift()();while(--c)}b=!1;a=0}catch(g){throw b=!1,a=0,d.length=c=0,g;}else--a}})();
@@ -78,9 +78,13 @@ For maximum performance, DeferStackJS does not completely disreguard the browser
 			return; // prevent an infinite loop
         }
         DeferStack(test);
-    }, 252); // reducing the buffer to only 4
+    });
 })();
+```
 
+However, if we decrease the bufferlevel down to 4 then the speed greatly decreases.
+
+```Javascript
 (function(){
     "use strict";
     (function(){var d=[],a=0,b=!1,c=0;window.DeferStack=function(f,e){e=+e||1;if(b)d.push(f),++c;else if(256<=a)b=!0,d.push(f),++c;else if(a?++a:a=e,f(),a===e)try{if(c){do b=!1,d.shift()();while(--c)}b=!1;a=0}catch(g){throw b=!1,a=0,d.length=c=0,g;}else--a}})();
@@ -96,6 +100,29 @@ For maximum performance, DeferStackJS does not completely disreguard the browser
         DeferStack(test);
     }, 252); // only a buffer of 4
 })();
+```
+
+However, if we increase the bufferlevel by 65536, then we get a "Maximum stack call exceeded" error in Chrome.
+
+```Javascript
+(function(){
+    "use strict";
+    (function(){var d=[],a=0,b=!1,c=0;window.DeferStack=function(f,e){e=+e||1;if(b)d.push(f),++c;else if(256<=a)b=!0,d.push(f),++c;else if(a?++a:a=e,f(),a===e)try{if(c){do b=!1,d.shift()();while(--c)}b=!1;a=0}catch(g){throw b=!1,a=0,d.length=c=0,g;}else--a}})();
+	var DeferStack = window.DeferStack;
+	var start = performance.now();
+    var i = 3000000; // 3 million iterations
+    DeferStack(function test(){
+        if (!--i) {
+			var end = performance.now();
+			console.log("Finished in " + (end-start) + "ms");
+			return; // prevent an infinite loop
+        }
+        DeferStack(test);
+    }, -65536); // increase by 65536
+})();
+```
+
+Thus, this is why you must be very careful when messing with the stack level: Some levels will work in some browsers while erroring in other browsers. Thus, it is reccomended that you always keep a very safe distance between you and a "Maximum stack call exceeded" error.
 
 ### Advanced usage help
 
