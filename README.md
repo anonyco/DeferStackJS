@@ -1,18 +1,18 @@
 # DeferStackJS
-DeferStackJS is the fastest "Maximum Stack Call Exceeded" error work around all in 258 bytes ungziped (only 206 bytes with gzip). If you need a more complete solution for calling functions after a defered function or getting the return value of a defered function, consider using a promise library such as my own [PromiseMeSpeedJS](https://github.com/anonyco/PromiseMeSpeedJS/).
+DeferStackJS is the fastest (to my knowlege) "Maximum Stack Call Exceeded" error work around all in 298 bytes ungziped (only 237 bytes with gzip). If you need a more complete solution for calling functions after a defered function or getting the return value of a defered function, consider using a promise library such as my own [PromiseMeSpeedJS](https://github.com/anonyco/PromiseMeSpeedJS/).
 
 ### Quick Start
 
 To use, simply drop the following snippet of HTML code into your `<head>` before all of the scripts that use PromiseMeSpeed.
 ```HTML
-<script src="https://www.dropbox.com/s/wvwyrzx557eqi0v/DeferStack.min.js?dl=2"></script>
+<script src="https://www.dropbox.com/s/oiglofuxa20b29r/DeferStackDEBUG.min.js?dl=2"></script>
 ```
 Or, alternatively if you want faster page loading, add a defer to every script to let the browser know that you don't call evil `document.write` inside your script.<br /><br />
 *Before:*
 ```HTML
 <!doctype HTML>
 <html><head>
-<script src="https://www.dropbox.com/s/wvwyrzx557eqi0v/DeferStack.min.js?dl=2"></script>
+<script src="https://www.dropbox.com/s/oiglofuxa20b29r/DeferStackDEBUG.min.js?dl=2"></script>
 <script src="/path/to/my/script.js"></script>
 </head><body>
     ...
@@ -22,7 +22,7 @@ Or, alternatively if you want faster page loading, add a defer to every script t
 ```HTML
 <!doctype HTML>
 <html><head>
-<script src="https://www.dropbox.com/s/wvwyrzx557eqi0v/DeferStack.min.js?dl=2" defer=""></script>
+<script src="https://www.dropbox.com/s/oiglofuxa20b29r/DeferStackDEBUG.min.js?dl=2" defer=""></script>
 <script src="/path/to/my/script.js" defer=""></script>
 </head><body>
     ...
@@ -37,27 +37,61 @@ DeferStackJS adds one and only one new method to the window object: `window.Defe
 function DeferStack(Function f_x, /*Optional*/ int stackStartLevel);
 ```
 
-As seen above, `window.DeferStack` can accept one or two paramters. The first parameter, *f_x*, is the function to be defered.  The *stackStartLevel* parameter only gets applied to the outermost DeferStack.
+As seen above, `window.DeferStack` can accept one or two paramters. The first parameter, *f_x*, is the function to be defered.  The *stackStartLevel* parameter only gets applied to the outermost DeferStack. However, you are not yet ready to start using defer stack just yet! You must read the section *Integrating Deferstack Into Your Code* first.
+
+### Integrating Deferstack Into Your Code (!IMPORANT!)
+While the API may sound simple, putting DeferStackJS into existing code can be much harder. This challenge is because as great as DeferStackJS is, DeferStackJS simply cannot work magic. Basically, to ensure that your code executes linearly, you must make a call to defer stack all the two following areas of your code:
+ 
+1. At calls to linearly executed action.
+2. At calls that loop through many new items.
+
+For example, let's examine the following code.
+```Javascript
+// A recursive for each iterator on an object
+function forEachRecursive(obj, funcAppliedToEach) {
+	"use strict";
+	for (var key in obj) {
+		funcAppliedToEach(obj[key], key, obj);
+		if (typeof obj[key] === "object") {
+			forEachRecursive(obj[key], funcAppliedToEach);
+		}
+	}
+}
+```
+Then, to convert it to using DeferStackJS, we must use the two rules shown above. Using theese two rules yeilds the following code:
+
+```Javascript
+var DeferStack = window.DeferStack;
+function forEachRecursive(obj, funcAppliedToEach) {
+	"use strict";
+	for (var key in obj) {
+		DeferStack( funcAppliedToEach.bind(undefined, obj[key], key, obj) );
+		if (typeof obj[key] === "object") {
+			DeferStack( forEachRecursive.bind(undefined, obj[key], funcAppliedToEach) );
+		}
+	}
+}
+```
 
 ### Example
 
-Try running the code below in the console.
+Try running the code below in the console (press Ctrl+Shift+I in Chrome).
 
 ```Javascript
 (function(){
-    "use strict";
-    (function(){var d=[],a=0,b=!1,c=0;window.DeferStack=function(f,e){e=+e||1;if(b)d.push(f),++c;else if(256<=a)b=!0,d.push(f),++c;else if(a?++a:a=e,f(),a===e)try{if(c){do b=!1,d.shift()();while(--c)}b=!1;a=0}catch(g){throw b=!1,a=0,d.length=c=0,g;}else--a}})();
+	"use strict";
+	(function(){var d=[],a=0,b=!1,c=0;window.DeferStack=function(f,e){e=+e||1;if(b)d.push(f),++c;else if(256<=a)b=!0,d.push(f),++c;else if(a?++a:a=e,f(),a===e)try{if(c){do b=!1,d.shift()();while(--c)}b=!1;a=0}catch(g){throw b=!1,a=0,d.length=c=0,g;}else--a}})(); // DeferStack.min.js
 	var DeferStack = window.DeferStack;
 	var start = performance.now();
-    var i = 3000000; // 3 million iterations
-    DeferStack(function test(){
-        if (!--i) {
+	var i = 3000000; // 3 million iterations
+	DeferStack(function test(){
+		if (!--i) {
 			var end = performance.now();
 			console.log("Finished in " + (end-start) + "ms");
 			return; // prevent an infinite loop
-        }
-        DeferStack(test);
-    });
+		}
+		DeferStack(test);
+	});
 })();
 ```
 
@@ -123,6 +157,13 @@ However, if we increase the bufferlevel by 65536, then we get a "Maximum stack c
 ```
 
 Thus, this is why you must be very careful when messing with the stack level: Some levels will work in some browsers while erroring in other browsers. Thus, it is reccomended that you always keep a very safe distance between you and a "Maximum stack call exceeded" error.
+
+### Faster Version of DeferStack
+For many, the default version of defer stack may be 'good enough.' However, it includes nonessential type checks to make sure you are passing the right types of arguments to DeferStack. However, theese extra checks consume extra CPU power. Thus, there is an alternative version of DeferStack without theese checks for the maximum performance. If you are still a novice at javascript, then it is reccomended that this version is not used during development.
+
+```HTML
+<script src="https://www.dropbox.com/s/wvwyrzx557eqi0v/DeferStack.min.js?dl=2" defer=""></script>
+```
 
 ### Advanced usage help
 
