@@ -5,14 +5,14 @@ DeferStackJS is the fastest (to my knowlege) "Maximum Stack Call Exceeded" error
 
 To use, simply drop the following snippet of HTML code into your `<head>` before all of the scripts that use PromiseMeSpeed.
 ```HTML
-<script src="https://www.dropbox.com/s/oiglofuxa20b29r/DeferStackDEBUG.min.js?dl=2"></script>
+<script src="https://dl.dropboxusercontent.com/s/oiglofuxa20b29r/DeferStackDEBUG.min.js?dl=0"></script>
 ```
 Or, alternatively if you want faster page loading, add a defer to every script to let the browser know that you don't call evil `document.write` inside your script.<br /><br />
 *Before:*
 ```HTML
 <!doctype HTML>
 <html><head>
-<script src="https://www.dropbox.com/s/oiglofuxa20b29r/DeferStackDEBUG.min.js?dl=2"></script>
+<script src="https://dl.dropboxusercontent.com/s/oiglofuxa20b29r/DeferStackDEBUG.min.js?dl=0"></script>
 <script src="/path/to/my/script.js"></script>
 </head><body>
     ...
@@ -22,7 +22,7 @@ Or, alternatively if you want faster page loading, add a defer to every script t
 ```HTML
 <!doctype HTML>
 <html><head>
-<script src="https://www.dropbox.com/s/oiglofuxa20b29r/DeferStackDEBUG.min.js?dl=2" defer=""></script>
+<script src="https://dl.dropboxusercontent.com/s/oiglofuxa20b29r/DeferStackDEBUG.min.js?dl=0" defer=""></script>
 <script src="/path/to/my/script.js" defer=""></script>
 </head><body>
     ...
@@ -162,7 +162,7 @@ Thus, this is why you must be very careful when messing with the stack level: So
 For many, the default version of defer stack may be 'good enough.' However, it includes nonessential type checks to make sure you are passing the right types of arguments to DeferStack. However, theese extra checks consume extra CPU power. Thus, there is an alternative version of DeferStack without theese checks for the maximum performance. If you are still a novice at javascript, then it is reccomended that this version is not used during development.
 
 ```HTML
-<script src="https://www.dropbox.com/s/wvwyrzx557eqi0v/DeferStack.min.js?dl=2" defer=""></script>
+<script src="https://dl.dropboxusercontent.com/s/wvwyrzx557eqi0v/DeferStack.min.js?dl=0" defer=""></script>
 ```
 
 ### Advanced usage help
