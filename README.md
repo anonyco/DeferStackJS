@@ -178,11 +178,13 @@ function flatten(obj){
     var entries = Object.entries( obj );
     Array.prototype.push.apply( resultingArray, entries );
     entries.forEach(function(obj){
-      if (typeof obj === "object")
+      if (typeof obj[1] === "object")
         DeferStack(function(){
           // this function is a closure
-          recurse(obj);
+          recurse(obj[1]);
         });
+      else
+      	resultingArray.push(obj);
     });
   })(obj);
   return resultingArray;
@@ -201,8 +203,8 @@ function flatten(obj){
     var entries = Object.entries( obj );
     Array.prototype.push.apply( resultingArray, entries );
     DeferStack(entries.forEach.bind(entries, function(obj){
-      if (typeof obj === "object")
-        recurse(obj);
+      if (typeof obj[1] === "object")
+        recurse(obj[1]);
       else
       	resultingArray.push(obj);
     }));
@@ -231,8 +233,8 @@ function circularSafeFlatten(obj){
     var entries = Object.entries( obj );
     Array.prototype.push.apply( resultingArray, entries );
     DeferStack(entries.forEach.bind(entries, function(obj){
-      if (typeof obj === "object")
-      	recurse(obj);
+      if (typeof obj[1] === "object")
+      	recurse(obj[1]);
       else
       	resultingArray.push(obj);
     }));
