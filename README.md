@@ -40,7 +40,7 @@ function DeferStack(Function f_x, /*Optional*/ int stackStartLevel);
 As seen above, `window.DeferStack` can accept one or two paramters. The first parameter, *f_x*, is the function to be defered.  The *stackStartLevel* parameter only gets applied to the outermost DeferStack. However, you are not yet ready to start using defer stack just yet! You must read the section *Integrating Deferstack Into Your Code* first.
 
 ### Integrating Deferstack Into Your Code (!IMPORANT!)
-While the API may sound simple, putting DeferStackJS into existing code can be much harder. This challenge is because as great as DeferStackJS is, DeferStackJS simply cannot work magic. Basically, to ensure that your code executes linearly, you must make a call to defer stack all the two following areas of your code:
+While the API may sound simple, putting DeferStackJS into existing code can be much harder. This challenge is because as great as DeferStackJS is, DeferStackJS simply cannot work magic. Basically, to ensure that your code executes linearly, you must make a call to defer stack at the two following areas of your code:
  
 1. At calls to linearly executed action.
 2. At calls that loop through many new items.
