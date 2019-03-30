@@ -1,5 +1,5 @@
 # DeferStackJS
-DeferStackJS is the fastest (to my knowlege) "Maximum Stack Call Exceeded" error work around all in 298 bytes ungziped (only 237 bytes with gzip). If you need a more complete solution for calling functions after a defered function or getting the return value of a defered function, consider using a promise library such as my own [PromiseMeSpeedJS](https://github.com/anonyco/PromiseMeSpeedJS/).
+DeferStackJS aims to be the fasest possible solution to the "Maximum Stack Call Exceeded" error. It is aims to be the smallest, weighing in at 298 bytes ungziped (only 237 bytes with gzip). If you need a more complete solution for calling functions after a defered function or getting the return value of a defered function, consider using a promise library such as my own [PromiseMeSpeedJS](https://github.com/anonyco/PromiseMeSpeedJS/).
 
 ### Quick Start
 
@@ -193,7 +193,7 @@ function flatten(obj){
 
 ### How the Internals work
 
-You are probably interested in how something so small and so simple can do so much. Thus, the following is a description of how the internals work. If you can `window.DeferStack` inside *f_x* enough times, then it stops executing the function immediatly and instead adds the function to an internal que before bubbles downward toward the outermost call to `window.DeferStack` at a lower stack level. Then, the `window.DeferStack` executes all the functions in the internal que until they bubble up to too high of a stack level. This is repeated until there are no items left in the internal que. This is also why using this library can be dangerous: if you accidentally cause an infinite loop then its going to keep on going forever because there is no maximum stack call to stop it. For example, the following code will continue to infinitum or at least until the user gets frustrated enough and force powers off their PC. YOU HAVE BEEN WARNED: AVOID CODE LIKE SHOWN BELOW
+You are probably interested in how something so small and so simple can do so much. Thus, the following is a description of how the internals work. If you can `window.DeferStack` inside *f_x* enough times, then it stops executing the function immediatly and instead adds the function to an internal que before bubbles downward toward the outermost call to `window.DeferStack` at a lower stack level. Then, the `window.DeferStack` executes all the functions in the internal que until they bubble up to too high of a stack level. This is repeated until there are no items left in the internal que. This is also why using this library can be dangerous: if you accidentally cause an infinite loop then its going to keep on going forever because there is no maximum stack call to stop it. For example, the following code will continue to infinitum or at least until the user gets frustrated enough and force powers off their PC. **YOU HAVE BEEN WARNED: AVOID CODE LIKE SHOWN BELOW**
 
 ```Javascript
 var DeferStack = window.DeferStack; // for the best performance, declare DeferStack as a local variable
