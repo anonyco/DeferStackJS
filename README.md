@@ -58,7 +58,7 @@ function forEachRecursive(obj, funcAppliedToEach) {
 	}
 }
 ```
-Then, to convert it to using DeferStackJS, we must use the two rules shown above. Using theese two rules yeilds the following code:
+Then, to convert it to using DeferStackJS, we must use the two rules shown above. Using these two rules yeilds the following code:
 
 ```Javascript
 var DeferStack = window.DeferStack;
@@ -159,7 +159,7 @@ However, if we increase the bufferlevel by 65536, then we get a "Maximum stack c
 Thus, this is why you must be very careful when messing with the stack level: Some levels will work in some browsers while erroring in other browsers. Thus, it is reccomended that you always keep a very safe distance between you and a "Maximum stack call exceeded" error.
 
 ### Faster Version of DeferStack
-For many, the default version of defer stack may be 'good enough.' However, it includes nonessential type checks to make sure you are passing the right types of arguments to DeferStack. However, theese extra checks consume extra CPU power. Thus, there is an alternative version of DeferStack without theese checks for the maximum performance. If you are still a novice at javascript, then it is reccomended that this version is not used during development.
+For many, the default version of defer stack may be 'good enough.' However, it includes nonessential type checks to make sure you are passing the right types of arguments to DeferStack. However, these extra checks consume extra CPU power. Thus, there is an alternative version of DeferStack without these checks for the maximum performance. If you are still a novice at javascript, then it is reccomended that this version is not used during development.
 
 ```HTML
 <script src="https://dl.dropboxusercontent.com/s/wvwyrzx557eqi0v/DeferStack.min.js?dl=0" defer=""></script>
@@ -193,7 +193,7 @@ function flatten(obj){
 
 ### How the Internals work
 
-You are probably interested in how something so small and so simple can do so much. Thus, the following is a description of how the internals work. If you can `window.DeferStack` inside *f_x* enough times, then it stopes executing the function immediatly and instead adds the function to an internal que before bubbles downward toward the outermost call to `window.DeferStack` at a lower stack level. Then, the `window.DeferStack` executes all the functions in the internal que until they bubble up to too high of a stack level. This is repeated until there are no items left in the internal que. This is also why using this library can be dangerous: if you accidentally cause an infinite loop then its going to keep on going forever because there is no maximum stack call to stop it. For example, the following code will continue to infinitum or at least until the user gets frustrated enough and force powers off their PC. YOU HAVE BEEN WARNED: AVOID CODE LIKE SHOWN BELOW
+You are probably interested in how something so small and so simple can do so much. Thus, the following is a description of how the internals work. If you can `window.DeferStack` inside *f_x* enough times, then it stops executing the function immediatly and instead adds the function to an internal que before bubbles downward toward the outermost call to `window.DeferStack` at a lower stack level. Then, the `window.DeferStack` executes all the functions in the internal que until they bubble up to too high of a stack level. This is repeated until there are no items left in the internal que. This is also why using this library can be dangerous: if you accidentally cause an infinite loop then its going to keep on going forever because there is no maximum stack call to stop it. For example, the following code will continue to infinitum or at least until the user gets frustrated enough and force powers off their PC. YOU HAVE BEEN WARNED: AVOID CODE LIKE SHOWN BELOW
 
 ```Javascript
 var DeferStack = window.DeferStack; // for the best performance, declare DeferStack as a local variable
